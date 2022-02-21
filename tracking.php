@@ -97,11 +97,11 @@
                                     if($tracking['dstatus']=="A"){
                                         echo "<tr><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Accepted</td></tr>";
                                     }elseif($tracking['dstatus']=="B"){
-                                        echo "<tr style='background:#646363 !important;color:white!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Blocked</td></tr>";
+                                        echo "<tr style='background:#f34444 !important;color:white!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Blocked</td></tr>";
                                     }elseif($tracking['dstatus']=="Q"){
                                         echo "<tr style='background:#FFE7C2!important;color:black!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Quarantined</td></tr>";
                                     }elseif($tracking['dstatus']=="N"){
-                                        echo "<tr style='background:#f34444!important;color:white!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Rejected </td></tr>";
+                                        echo "<tr style='background:#646363!important;color:white!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Rejected </td></tr>";
                                     }elseif($tracking['dstatus']=="G"){
                                         echo "<tr style='background:#9d9d9d!important;color:white!important;'><td>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td>Greylisted </td></tr>";
                                     }
