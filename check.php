@@ -12,7 +12,7 @@
         // set url
         curl_setopt($ch, CURLOPT_URL, "https://mx-01.accessworld.net:8006/api2/json/access/ticket");
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-        "username=api-auditor@pmg&password=Nepal1234$#@!#");
+        "username=api-auditor@pmg&password=S]S2V8-ay2B\}Hev");
         //return the transfer as a string
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 

@@ -32,6 +32,9 @@
             </ul>
         </form> -->
     </div>
+    <a href="tracking.php" class="btn btn-primary">Email Tracking</a>
+    <a href="blockedsender.php" class="btn btn-primary">Email Blocked Senders</a>
+    <a href="blacklist.php" class="btn btn-primary">Email Blacklist</a>
     <style>
         body{
             background:#007CC3;
