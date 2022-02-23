@@ -1,29 +1,45 @@
 <?php
-        
+    
+    $ticket=$track=$tracklist=$json_track=$tracklist_list="";
+        // create curl resource
+    $ch = curl_init();
+
+    // set url
+    curl_setopt($ch, CURLOPT_URL, "https://mx-01.accessworld.net:8006/api2/json/access/ticket");
+    curl_setopt($ch, CURLOPT_POSTFIELDS,
+    "username=api-auditor@pmg&password=S]S2V8-ay2B\}Hev");
+    //return the transfer as a string
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+    // $output contains the output string
+    $output = curl_exec($ch);
+    $json_output= json_decode($output,true);
+    //   var_dump($json_output["data"]);
+    $ticket= $json_output["data"]["ticket"];
+    // close curl resource to free up system resources
+    curl_close($ch);   
+    // var_dump($ticket);
+    // var_dump($_POST['sender']);
+    $domainarray=[];
+    $domains= curl_init();
+
+    curl_setopt($domains, CURLOPT_URL, "https://mx-01.accessworld.net:8006/api2/json/config/transport");
+    curl_setopt($domains, CURLOPT_HTTPHEADER, array("Cookie: PMGAuthCookie=$ticket"));
+    curl_setopt($domains, CURLOPT_RETURNTRANSFER, 1);
+    $domainslist = curl_exec($domains);
+    curl_close($domains);
+    $json_track= json_decode($domainslist,true);
+    $domainslist_list= $json_track['data'];
+    // var_dump($domainslist_list);
+    foreach($domainslist_list as $domainlist){
+         array_push($domainarray,$domainlist['domain']);
+    }
 
     if(isset($_POST["receiver"]) && isset($_POST['sender']))
     {
-        $ticket=$track=$tracklist=$json_track=$tracklist_list="";
-                    // create curl resource
-        $ch = curl_init();
-
-        // set url
-        curl_setopt($ch, CURLOPT_URL, "https://mx-01.accessworld.net:8006/api2/json/access/ticket");
-        curl_setopt($ch, CURLOPT_POSTFIELDS,
-        "username=api-auditor@pmg&password=S]S2V8-ay2B\}Hev");
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // $output contains the output string
-        $output = curl_exec($ch);
-        $json_output= json_decode($output,true);
-        //   var_dump($json_output["data"]);
-        $ticket= $json_output["data"]["ticket"];
-        // close curl resource to free up system resources
-        curl_close($ch);   
-        // var_dump($ticket);
+        // var_dump($_POST['receiver']);
         $track= curl_init();
-        // var_dump($_POST['sender']);
+
         $sender=$receiver=$starttime=$endtime="";
         $receiver=$_POST['receiver'];
         date_default_timezone_set('Asia/Kathmandu');
@@ -74,48 +90,10 @@
 <body>
     <header>
         <img class="img-fluid top-logo" src="https://email.accessworld.net/skins/_base/logos/LoginBanner_white.png?v=210621064452" alt="">
-        <h3 class="header-title">Accessworld Tech Mail Tracking </h3>
+        <h3 class="header-title">Mail Tracking Center</h3>
     </header>
     <div class="container">
-        <?php if(isset($_POST["receiver"]) && isset($_POST['sender'])){ ?>
-            <table class="table table-striped">
-                <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Time</th>
-                        <th scope="col">Sender Address</th>
-                        <th scope="col">Receiver Address</th>
-                        <th scope="col">Delivery Status</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        
-
-                            foreach (array_reverse($tracklist_list) as $tracking){
-                                                                
-                                    if($tracking['dstatus']=="A"){
-                                        echo "<tr><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px'>Accepted</td></tr>";
-                                    }elseif($tracking['dstatus']=="B"){
-                                        echo "<tr style='background:#f34444 !important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px'>Blocked</td></tr>";
-                                    }elseif($tracking['dstatus']=="Q"){
-                                        echo "<tr style='background:#FFE7C2!important;color:black!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px'>Quarantined</td></tr>";
-                                    }elseif($tracking['dstatus']=="N"){
-                                        echo "<tr style='background:#646363!important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px'>Rejected </td></tr>";
-                                    }elseif($tracking['dstatus']=="G"){
-                                        echo "<tr style='background:#9d9d9d!important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px'>Greylisted </td></tr>";
-                                    }
-                                
-                            }
-                
-                        
-
-
-                    ?>
-                </tbody>
-            </table>
-        <?php }else{?>
-            <form action="tracking.php" method="POST">
+    <form action="tracking.php" method="POST">
                 <div class="form-group">
                     <label for="sender">Sender Email/Domain</label>
                     <input type="text" class="form-control" name="sender" id="sender" placeholder="Sender Email/Domain">
@@ -123,11 +101,18 @@
                 <div class="form-group">
                     <label for="receiver">Receiver Email/Domain</label>
                     <select class="form-control" name="receiver"  id="receiver">
-                        <option value="nac.com.np">nac.com.np</option>
+                        <!-- <option value="nac.com.np">nac.com.np</option>
                         <option value="accessworld.net">accessworld.net</option>
                         <option value="leadsinnovation.com">leadsinnovation.com</option>
                         <option value="relifeinsurance.com">relifeinsurance.com</option>
-                        <option value="prabhulife.com">prabhulife.com</option>
+                        <option value="prabhulife.com">prabhulife.com</option> -->
+                        <?php 
+                            foreach($domainarray as $domain){
+                                echo "<option value='$domain'>$domain</option>";
+                            }
+
+                        
+                        ?>
                     </select>
                 </div>
                 <div class="form-group">
@@ -170,6 +155,45 @@
                 </script>   
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+        <?php if(isset($_POST["receiver"]) && isset($_POST['sender'])){ ?>
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Time</th>
+                        <th scope="col">Sender Address</th>
+                        <th scope="col">Receiver Address</th>
+                        <th scope="col">Delivery Status</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        
+
+                            foreach (array_reverse($tracklist_list) as $tracking){
+                                                                
+                                    if($tracking['dstatus']=="A"){
+                                        echo "<tr><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px;font-weight:bolder;color:green'>Accepted</td></tr>";
+                                    }elseif($tracking['dstatus']=="B"){
+                                        echo "<tr style='background:#f34444 !important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px;font-weight:bolder;'>Blocked</td></tr>";
+                                    }elseif($tracking['dstatus']=="Q"){
+                                        echo "<tr style='background:#FFE7C2!important;color:black!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px;font-weight:bolder;'>Quarantined</td></tr>";
+                                    }elseif($tracking['dstatus']=="N"){
+                                        echo "<tr style='background:#646363!important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px;font-weight:bolder;'>Rejected </td></tr>";
+                                    }elseif($tracking['dstatus']=="G"){
+                                        echo "<tr style='background:#9d9d9d!important;color:white!important;'><td style='max-width:100px'>".date('Y-m-d H:i:s',$tracking['time'])."</td><td>".$tracking['from']."</td><td>".$tracking['to']."</td><td style='max-width:100px;font-weight:bolder;'>Greylisted </td></tr>";
+                                    }
+                                
+                            }
+                
+                        
+
+
+                    ?>
+                </tbody>
+            </table>
+        <?php }else{?>
+            
         <?php }?>
     </div>
     <style>
@@ -208,6 +232,7 @@
             display: block;
             text-align:center;
             margin:0 auto;
+            margin-left:0
             /* zoom:1.2; */
         }
         .header-title{
